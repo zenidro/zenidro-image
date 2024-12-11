@@ -40,7 +40,7 @@ WORKDIR /server
 COPY --from=download_openmp /server/ .
 COPY --from=download_configuration /server/ .
 COPY entrypoint.sh /entrypoint.sh
-RUN /compiler/pawncc /gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
+RUN /server/compiler/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
 RUN rm compiler
 
 RUN chmod +x /server/omp-server && chmod +x /entrypoint.sh
