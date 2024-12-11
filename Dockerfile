@@ -35,7 +35,8 @@ RUN curl -s $ZENID_RESOURCES_URL \
     unzip $ZENID_CONFIG_FILE_NAME && \
     rm $ZENID_CONFIG_FILE_NAME && \
     mv config/* . && \
-    rmdir config
+    rmdir config && \
+    chmod +x compiler/pawncc
 
 FROM base AS final
 WORKDIR /server
