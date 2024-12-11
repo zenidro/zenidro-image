@@ -33,7 +33,9 @@ RUN curl -s $ZENID_RESOURCES_URL \
     | jq -r ".assets[] | select(.name==\"$ZENID_CONFIG_FILE_NAME\").browser_download_url" \
     | wget -qi - && \
     unzip $ZENID_CONFIG_FILE_NAME && \
-    rm $ZENID_CONFIG_FILE_NAME
+    rm $ZENID_CONFIG_FILE_NAME && \
+    mv config/* . && \
+    rmdir config
 
 FROM base AS final
 WORKDIR /server
