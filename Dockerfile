@@ -35,6 +35,7 @@ RUN curl -s $ZENID_RESOURCES_URL \
     unzip $ZENID_CONFIG_FILE_NAME && \
     rm $ZENID_CONFIG_FILE_NAME && \
     chmod +x compiler/bin/pawncc && \
+    mkdir -p ~/usr/local/lib && \
     mv compiler/lib/libpawnc.so ~/usr/local/lib
 
 FROM base AS final
