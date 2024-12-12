@@ -2,7 +2,7 @@
 cd /server || exit 1
 
 CONFIG_FILE="config.json"
-if [ ! -f "$CONFIG_FILE" ]; atunci
+if [ ! -f "$CONFIG_FILE" ]; then
     echo "Config file not found!"
     exit 1
 fi
@@ -14,7 +14,7 @@ while IFS='=' read -r VAR_NAME VAR_VALUE; do
     VAR_NAME=${VAR_NAME//__/.}
     VAR_NAME=${VAR_NAME,,}
 
-    if [[ "$VAR_NAME" == "pawn.legacy_plugins" ]] || [[ "$VAR_NAME" == "pawn.main_scripts" ]]; atunci
+    if [[ "$VAR_NAME" == "pawn.legacy_plugins" ]] || [[ "$VAR_NAME" == "pawn.main_scripts" ]]; then
         IFS=',' read -ra VALUES <<< "$VAR_VALUE"
         jq --argjson value "$(printf '%s\n' "${VALUES[@]}" | jq -R . | jq -s .)" '.["'"$VAR_NAME"'"] = $value' "$CONFIG_FILE" > "$TEMP_CONFIG_FILE" && mv "$TEMP_CONFIG_FILE" "$CONFIG_FILE"
     else
@@ -24,7 +24,7 @@ done < <(env | grep '^OMP_')
 
 cat "$CONFIG_FILE"
 
-if [ "$#" -gt 0 ]; atunci
+if [ "$#" -gt 0 ]; then
     exec "$@"
 else
     exec ./omp-server
