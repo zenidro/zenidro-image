@@ -1,21 +1,23 @@
 #!/bin/bash
 cd /server || exit 1
 
-echo "Current directory: $(pwd)"
+CONFIG_FILE="config.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Config file not found!"
+    exit 1
+fi
 
-OMP_CLI_ARGS=()
+TEMP_CONFIG_FILE=$(mktemp)
+
 while IFS='=' read -r VAR_NAME VAR_VALUE; do
     VAR_NAME=${VAR_NAME#OMP_}
     VAR_NAME=${VAR_NAME//__/.}
     VAR_NAME=${VAR_NAME,,}
-    OMP_CLI_ARGS+=("$VAR_NAME=$VAR_VALUE")
-    echo "Setting CLI arg: $VAR_NAME=$VAR_VALUE"
+    jq --arg key "$VAR_NAME" --arg value "$VAR_VALUE" '.[$key] = $value' "$CONFIG_FILE" > "$TEMP_CONFIG_FILE" && mv "$TEMP_CONFIG_FILE" "$CONFIG_FILE"
 done < <(env | grep '^OMP_')
 
 if [ "$#" -gt 0 ]; then
-    echo -e "\nAlternative launching method: $*"
     exec "$@"
 else
-    echo "Launching omp-server with args: ${OMP_CLI_ARGS[@]}"
-    exec ./omp-server -c "${OMP_CLI_ARGS[@]}"
+    exec ./omp-server -c "$CONFIG_FILE"
 fi
