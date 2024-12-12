@@ -29,13 +29,13 @@ FROM base AS download_configuration
 WORKDIR /server
 ENV ZENID_CONFIG_FILE_NAME=config.zip
 ENV ZENID_RESOURCES_URL="https://api.github.com/repos/zenidro/config/releases/latest"
-ENV LD_LIBRARY_PATH="compiler/lib:$LD_LIBRARY_PATH"
 RUN curl -s $ZENID_RESOURCES_URL \
     | jq -r ".assets[] | select(.name==\"$ZENID_CONFIG_FILE_NAME\").browser_download_url" \
     | wget -qi - && \
     unzip $ZENID_CONFIG_FILE_NAME && \
     rm $ZENID_CONFIG_FILE_NAME && \
-    chmod +x compiler/bin/pawncc
+    chmod +x compiler/bin/pawncc && \
+    mv compiler/lib/libpawnc.so ~/usr/local/lib
 
 FROM base AS final
 WORKDIR /server
