@@ -29,7 +29,7 @@ FROM base AS download_configuration
 WORKDIR /server
 ENV ZENID_CONFIG_FILE_NAME=config.zip
 ENV ZENID_RESOURCES_URL="https://api.github.com/repos/zenidro/config/releases/latest"
-ENV LD_LIBRARY_PATH="/server/compiler/lib"
+ENV LD_LIBRARY_PATH="compiler/lib:$LD_LIBRARY_PATH"
 RUN curl -s $ZENID_RESOURCES_URL \
     | jq -r ".assets[] | select(.name==\"$ZENID_CONFIG_FILE_NAME\").browser_download_url" \
     | wget -qi - && \
