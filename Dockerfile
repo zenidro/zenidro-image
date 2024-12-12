@@ -8,6 +8,7 @@ RUN dpkg --add-architecture i386 && \
     apt-get install -y libstdc++6:i386 build-essential \
     curl \
     unzip \
+    jq \
     wget \
     tar \
     jq
