@@ -1,30 +1,47 @@
 #!/bin/bash
 cd /server || exit 1
 
-CONFIG_FILE="config.json"
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "Config file not found!"
-    exit 1
-fi
+echo "Current directory: $(pwd)"
 
-TEMP_CONFIG_FILE=$(mktemp)
+OMP_CLI_ARGS=()
 
 while IFS='=' read -r VAR_NAME VAR_VALUE; do
     VAR_NAME=${VAR_NAME#OMP_}
     VAR_NAME=${VAR_NAME//__/.}
     VAR_NAME=${VAR_NAME,,}
 
-    if [[ "$VAR_NAME" == "pawn.legacy_plugins" ]] || [[ "$VAR_NAME" == "pawn.main_scripts" ]]; then
-        IFS=',' read -ra VALUES <<< "$VAR_VALUE"
-        jq --argjson value "$(printf '%s\n' "${VALUES[@]}" | jq -R . | jq -s .)" '.["'"$VAR_NAME"'"] = $value' "$CONFIG_FILE" > "$TEMP_CONFIG_FILE" && mv "$TEMP_CONFIG_FILE" "$CONFIG_FILE"
+    if [[ $VAR_NAME == *"."* ]]; then
+        if [[ $VAR_VALUE ==
+
+\[*\]
+
+ ]]; then
+            VAR_VALUE=$(echo "$VAR_VALUE" | sed -e 's/^
+
+\[//' -e 's/\]
+
+$//')
+            VAR_VALUE="[${VAR_VALUE//\'/\"}]"
+        fi
+        IFS='.' read -ra KEYS <<< "$VAR_NAME"
+        TMP_JSON=""
+        for (( idx=${#KEYS[@]}-1 ; idx>=0 ; idx-- )); do
+            if [ -z "$TMP_JSON" ]; then
+                TMP_JSON="\"${KEYS[idx]}\": $VAR_VALUE"
+            else
+                TMP_JSON="{\"${KEYS[idx]}\": $TMP_JSON}"
+            fi
+        done
+        VAR_NAME=$TMP_JSON
+        OMP_CLI_ARGS+=("$VAR_NAME")
     else
-        jq --arg key "$VAR_NAME" --arg value "$VAR_VALUE" '.[$key] = $value' "$CONFIG_FILE" > "$TEMP_CONFIG_FILE" && mv "$TEMP_CONFIG_FILE" "$CONFIG_FILE"
+        OMP_CLI_ARGS+=("$VAR_NAME=$VAR_VALUE")
     fi
+    echo "Setting CLI arg: $VAR_NAME=$VAR_VALUE"
 done < <(env | grep '^OMP_')
 
-cat "$CONFIG_FILE"
-
 if [ "$#" -gt 0 ]; then
+    echo -e "\nAlternative launching method: $*"
     exec "$@"
 else
     exec ./omp-server
