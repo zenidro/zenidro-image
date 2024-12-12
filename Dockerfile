@@ -29,6 +29,7 @@ FROM base AS download_configuration
 WORKDIR /server
 ENV ZENID_CONFIG_FILE_NAME=config.zip
 ENV ZENID_RESOURCES_URL="https://api.github.com/repos/zenidro/config/releases/latest"
+ENV LD_LIBRARY_PATH="/server/compiler/lib"
 RUN curl -s $ZENID_RESOURCES_URL \
     | jq -r ".assets[] | select(.name==\"$ZENID_CONFIG_FILE_NAME\").browser_download_url" \
     | wget -qi - && \
@@ -41,7 +42,6 @@ WORKDIR /server
 COPY --from=download_openmp /server/ .
 COPY --from=download_configuration /server/ .
 COPY entrypoint.sh /entrypoint.sh
-RUN export LD_LIBRARY_PATH="/server/compiler/lib:$LD_LIBRARY_PATH"
 RUN /server/compiler/bin/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
 RUN rm -rf /server/compiler
 
