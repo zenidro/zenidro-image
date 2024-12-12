@@ -12,7 +12,8 @@ while IFS= read -r ENV_VAR; do
 
     if jq --exit-status ".${VAR_NAME}" config.json > /dev/null; then
         if [[ $VAR_VALUE =~ ^\[.*\]$ ]]; then
-            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g')
+            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g' | sed 's/"//g')
+            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/"/\\"/g')
             jq ".${VAR_NAME} = [${VAR_VALUE}]" config.json > config.json.tmp
         else
             jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
@@ -20,7 +21,8 @@ while IFS= read -r ENV_VAR; do
         mv config.json.tmp config.json
     else
         if [[ $VAR_VALUE =~ ^\[.*\]$ ]]; then
-            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g')
+            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g' | sed 's/"//g')
+            VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/"/\\"/g')
             jq ".${VAR_NAME} = [${VAR_VALUE}]" config.json > config.json.tmp
         else
             jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
@@ -39,7 +41,7 @@ if [ $# -gt 0 ]; then
     echo -e "\nAlternative launching method: $@"
     sh -c "$@"
 else
-    ./omp-server -c "${OMP_CLI_ARGS[@]}"
+    ./omp-server
 fi
 
 EXIT_CODE=$?
