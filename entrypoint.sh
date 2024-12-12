@@ -14,6 +14,8 @@ while IFS= read -r ENV_VAR; do
         if [[ $VAR_VALUE =~ ^\[.*\]$ ]]; then
             VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g')
             jq ".${VAR_NAME} = [${VAR_VALUE}]" config.json > config.json.tmp
+        elif [[ $VAR_VALUE =~ ^(true|false)$ ]]; then
+            jq ".${VAR_NAME} = ${VAR_VALUE}" config.json > config.json.tmp
         else
             jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
         fi
@@ -22,6 +24,8 @@ while IFS= read -r ENV_VAR; do
         if [[ $VAR_VALUE =~ ^\[.*\]$ ]]; then
             VAR_VALUE=$(echo "$VAR_VALUE" | sed 's/\[/"/g' | sed 's/\]/"/g' | sed 's/,/","/g')
             jq ".${VAR_NAME} = [${VAR_VALUE}]" config.json > config.json.tmp
+        elif [[ $VAR_VALUE =~ ^(true|false)$ ]]; then
+            jq ".${VAR_NAME} = ${VAR_VALUE}" config.json > config.json.tmp
         else
             jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
         fi
