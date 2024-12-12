@@ -36,15 +36,15 @@ RUN curl -s $ZENID_RESOURCES_URL \
     rm $ZENID_CONFIG_FILE_NAME && \
     mv config/* . && \
     rmdir config && \
-    chmod +x compiler/pawncc
+    chmod +x compiler/bin/pawncc
 
 FROM base AS final
 WORKDIR /server
 COPY --from=download_openmp /server/ .
 COPY --from=download_configuration /server/ .
 COPY entrypoint.sh /entrypoint.sh
-RUN /server/compiler/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
-RUN rm compiler
+RUN /server/compiler/bin/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
+RUN rm -rf /server/compiler
 
 RUN chmod +x /server/omp-server && chmod +x /entrypoint.sh
 
