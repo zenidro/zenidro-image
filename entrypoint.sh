@@ -19,5 +19,5 @@ done < <(env | grep '^OMP_')
 if [ "$#" -gt 0 ]; then
     exec "$@"
 else
-    exec ./omp-server -c "$CONFIG_FILE"
+    exec ./omp-server
 fi
