@@ -34,7 +34,7 @@ if [ $# -gt 0 ]; then
     echo -e "\nAlternative launching method: $@"
     sh -c "$@"
 else
-    ./omp-server -c "${OMP_CLI_ARGS[@]}"
+    ./omp-server
 fi
 
 EXIT_CODE=$?
