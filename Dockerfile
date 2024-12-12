@@ -41,6 +41,7 @@ WORKDIR /server
 COPY --from=download_openmp /server/ .
 COPY --from=download_configuration /server/ .
 COPY entrypoint.sh /entrypoint.sh
+RUN export LD_LIBRARY_PATH="/server/compiler/lib:$LD_LIBRARY_PATH"
 RUN /server/compiler/bin/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
 RUN rm -rf /server/compiler
 
