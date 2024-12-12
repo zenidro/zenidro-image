@@ -22,7 +22,12 @@ RUN curl -s $OPENMP_ARTIFACT_URL \
     tar -xzf $OPENMP_FILE_NAME && \
     rm $OPENMP_FILE_NAME && \
     mv Server/* . && \
-    rmdir Server
+    rmdir Server && \
+    rm -rf gamemodes && \
+    rm -rf scriptfiles && \
+    rm -rf filterscripts && \
+    rm -rf models && \
+    rm bans.json
 
 
 FROM base AS download_configuration
@@ -33,18 +38,13 @@ RUN curl -s $ZENID_RESOURCES_URL \
     | jq -r ".assets[] | select(.name==\"$ZENID_CONFIG_FILE_NAME\").browser_download_url" \
     | wget -qi - && \
     unzip $ZENID_CONFIG_FILE_NAME && \
-    rm $ZENID_CONFIG_FILE_NAME && \
-    chmod +x compiler/bin/pawncc && \
-    mkdir -p ~/usr/local/lib && \
-    mv compiler/lib/libpawnc.so ~/usr/local/lib
+    rm $ZENID_CONFIG_FILE_NAME
 
 FROM base AS final
 WORKDIR /server
 COPY --from=download_openmp /server/ .
 COPY --from=download_configuration /server/ .
 COPY entrypoint.sh /entrypoint.sh
-RUN /server/compiler/bin/pawncc /server/gamemodes/main.pwn -Dgamemodes "-;+" "--(+" "-d3"
-RUN rm -rf /server/compiler
 
 RUN chmod +x /server/omp-server && chmod +x /entrypoint.sh
 
