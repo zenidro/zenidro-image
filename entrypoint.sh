@@ -11,10 +11,10 @@ while IFS= read -r ENV_VAR; do
     VAR_NAME=$(echo "$VAR_NAME" | sed 's/^OMP_//g' | sed 's/__/\./g' | tr '[:upper:]' '[:lower:]')
 
     if jq --exit-status ".${VAR_NAME}" config.json > /dev/null; then
-        jq ".${VAR_NAME} = ${VAR_VALUE}" config.json > config.json.tmp
+        jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
         mv config.json.tmp config.json
     else
-        jq ".${VAR_NAME} = ${VAR_VALUE}" config.json > config.json.tmp
+        jq ".${VAR_NAME} = \"${VAR_VALUE}\"" config.json > config.json.tmp
         mv config.json.tmp config.json
     fi
 
