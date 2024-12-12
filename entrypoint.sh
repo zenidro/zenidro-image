@@ -16,7 +16,10 @@ while IFS='=' read -r VAR_NAME VAR_VALUE; do
     jq --arg key "$VAR_NAME" --arg value "$VAR_VALUE" '.[$key] = $value' "$CONFIG_FILE" > "$TEMP_CONFIG_FILE" && mv "$TEMP_CONFIG_FILE" "$CONFIG_FILE"
 done < <(env | grep '^OMP_')
 
-if [ "$#" -gt 0 ]; then
+# Afișează conținutul fișierului config.json după modificări
+cat "$CONFIG_FILE"
+
+if [ "$#" -gt 0 ];then
     exec "$@"
 else
     exec ./omp-server
