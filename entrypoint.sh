@@ -36,15 +36,7 @@ while IFS= read -r ENV_VAR; do
 
 done <<< "$ENV_OPENMP_VARS"
 
-echo "Config.json:"
-cat config.json
-
-if [ $# -gt 0 ]; then
-    echo -e "\nAlternative launching method: $@"
-    sh -c "$@"
-else
-    ./omp-server
-fi
+./omp-server
 
 EXIT_CODE=$?
 
